@@ -1,20 +1,6 @@
 import matplotlib.pyplot as plt
-import numpy as np
 
-from data_preparation import df_nominal
-
-
-# rects1 = ax.bar(x - width/2, men_means, width, label='Men')
-# rects2 = ax.bar(x + width/2, women_means, width, label='Women')
-
-# Add some text for labels, title and custom x-axis tick labels, etc.
-# ax.set_ylabel('Scores')
-# ax.set_title('Scores by group and gender')
-#
-# ax.legend()
-#
-# ax.bar_label(rects1, padding=3)
-# ax.bar_label(rects2, padding=3)
+from project.scripts.data_preparation import df_nominal, df_wo_nan
 
 
 def summary_hist(df, attr, group):
