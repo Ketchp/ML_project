@@ -27,6 +27,8 @@ ax_bottom.xaxis.tick_bottom()
 ax_bottom.ticklabel_format(axis='x', scilimits=(0, 0))
 # ax_top.ticklabel_format(axis='y', scilimits=(0, 0))
 
+ax_bottom.set_xlabel('capital gain')
+
 d = .01  # how big to make the diagonal lines in axes coordinates
 # arguments to pass to plot, just so we don't keep repeating them
 kwargs = dict(transform=ax_top.transAxes, color='k', clip_on=False, linewidth=1.0)
