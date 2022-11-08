@@ -41,4 +41,3 @@ for i, (train_index, test_index) in enumerate(selector.split(X)):
     # Find ideal lambda
     # Train new models with lambda on X_train / or save model for every lambda and use saved model
     # Compute Etest for table on X_test, y_test
-    # copy from classification increase_confusion...
