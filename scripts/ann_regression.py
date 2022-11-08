@@ -40,8 +40,8 @@ def train_ann_regressor(X_train, y_train,
                                                   loss_fn,
                                                   X=X_train,
                                                   y=y_train,
-                                                  n_replicates=1,  # increase when everything works
-                                                  max_iter=5000)   # preferably increase at least to 10000
+                                                  n_replicates=1,  # when everything work increase to 3
+                                                  max_iter=5000)   # preferably increase to at least 10000
 
     y_pred = net(X_test)
 

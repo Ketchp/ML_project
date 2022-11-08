@@ -27,9 +27,13 @@ y = y - y_offset
 
 K_1 = K_2 = 2  # TODO: when everything works, set to 10
 
-
-lambda_list = np.logspace(start=-5, stop=5, num=5)  # TODO: first try to find suitable ranges
-hidden_units_list = range(1, 12, 3)  # TODO: try to find suitable ranges
+# TODO: try to find suitable ranges,
+#  first run with small K_1, K_2 and find start/stop so that you can see error go down and back up
+#  once you found optimal lambda run with smaller range centred around optimal lambda
+lambda_list = np.logspace(start=-5, stop=5, num=11)
+# TODO: try to find suitable ranges,
+#  same as for lambda list( but this must always include k=1)
+hidden_units_list = np.array(1, 2, 3, 5, 10, 15, 40)
 
 
 outer_fold_errors = {'lin': np.ndarray((K_1, len(lambda_list))),
@@ -143,3 +147,5 @@ for model in predictions:
     predictions[model] = np.concatenate(predictions[model])
 
 # TODO: compute statics (e.g. ex7_2_1.py for pairs (baseline, linear), (baseline, ANN), (linear, ANN))
+#  p-value, CI
+#  use predictions variable
