@@ -27,9 +27,12 @@ df.columns = names.columns
 df.drop(columns='education', inplace=True)
 
 # (sex, result) to binary
-classNames = df['result'].unique()
+classNames = ['<=50K', '>50K']
 C = len(classNames)
-class_dict = dict(zip(classNames, range(C)))
+class_dict = {'<=50K': 0,
+              '<=50K.': 0,
+              '>50K': 1,
+              '>50K.': 1}
 
 df['result'].replace(class_dict, inplace=True)
 df['sex'].replace({'Male': 0, 'Female': 1}, inplace=True)
