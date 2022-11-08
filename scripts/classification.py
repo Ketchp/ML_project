@@ -1,7 +1,7 @@
 from data_preparation import X, y, N, M
 from sklearn.model_selection import KFold
 import numpy as np
-from baseline_classification import train_baseline_regressor
+from baseline_classification import train_baseline_classifier
 from linear_classification import train_logistic_regressor_ensemble, train_logistic_regressor
 from knn_classification import train_knn_regressor_ensemble, train_knn_regressor
 import matplotlib.pyplot as plt
@@ -85,8 +85,8 @@ for i, (outer_train_index, validation_index) in enumerate(outer_selector.split(X
     best_lambda = lambda_list[np.argmin(E_gen_lin)]
     best_k_neigh = neighbors_list[np.argmin(E_gen_knn)]
 
-    base_miss_rate, base_predictions = train_baseline_regressor(y_outer_train,
-                                                                y_validation)
+    base_miss_rate, base_predictions = train_baseline_classifier(y_outer_train,
+                                                                 y_validation)
 
     lin_miss_rate, _, lin_predictions = train_logistic_regressor(X_outer_train,
                                                                  y_outer_train,
