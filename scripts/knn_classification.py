@@ -25,4 +25,4 @@ def train_knn_regressor(X_train, y_train,
 
     miss_rate = np.sum(y_test != y_pred) / len(y_test)  # model miss-classification rate
 
-    return miss_rate, y_pred == y_test
+    return miss_rate, y_pred

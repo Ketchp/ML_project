@@ -1,12 +1,39 @@
-Logistic regressor
-best lambda     E_test
-1.00000         0.24133
-0.00010         0.24200
-0.00010         0.26267
-0.00010         0.24228
-0.00010         0.24050
-0.00010         0.23939
-1.00000         0.24783
-0.00010         0.23761
-0.00010         0.24983
-0.00010         0.24983
+Fold		lambda	Error	K	Error	Error
+0			0.63	0.24	25	0.16	0.25
+1			0.01	0.24	42	0.15	0.23
+2			0.01	0.26	22	0.16	0.24
+3			0.63	0.24	25	0.16	0.24
+4			0.01	0.24	28	0.15	0.25
+5			0.01	0.24	22	0.16	0.25
+6			0.63	0.25	25	0.17	0.25
+7			1.26	0.24	42	0.16	0.24
+8			0.01	0.25	25	0.16	0.24
+9			0.01	0.25	34	0.16	0.24
+
+tested lambdas: 0.01, 0.0199526231496888, 0.039810717055349734, 0.07943282347242814, 0.15848931924611134, 0.31622776601683794, 0.630957344480193, 1.2589254117941675, 2.5118864315095797, 5.011872336272719, 10.0
+tested K: 1, 5, 10, 16, 19, 22, 25, 28, 31, 34, 38, 42, 50, 100
+
+
+Baseline vs logistic regressor model:
+Result of McNemars test using alpha= 0.05
+Comparison matrix n
+[[24505.  9509.]
+ [ 9450.  1529.]]
+Approximate 1-alpha confidence interval of theta: [thetaL,thetaU] =  (-0.004686678108328457, 0.00730926176811586)
+p-value for two-sided test A and B have same accuracy (exact binomial test): p= 0.673587553486828
+
+Baseline vs KNN classifier model:
+Result of McNemars test using alpha= 0.05
+Comparison matrix n
+[[31566.  2448.]
+ [ 6228.  4751.]]
+Approximate 1-alpha confidence interval of theta: [thetaL,thetaU] =  (-0.08799494834106769, -0.08002986553887892)
+p-value for two-sided test A and B have same accuracy (exact binomial test): p= 0.0
+
+Logistic regressor vs KNN classifier model:
+Result of McNemars test using alpha= 0.05
+Comparison matrix n
+[[30542.  3413.]
+ [ 7252.  3786.]]
+Approximate 1-alpha confidence interval of theta: [thetaL,thetaU] =  (-0.08975253863808486, -0.08089456613888069)
+p-value for two-sided test A and B have same accuracy (exact binomial test): p= 3.79080742535453e-309

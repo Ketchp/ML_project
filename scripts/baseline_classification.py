@@ -6,5 +6,4 @@ def train_baseline_regressor(y_train, y_test):
 
     miss_rate = np.sum(y_test != prediction) / len(y_test)
 
-    return miss_rate, y_test == prediction
-
+    return miss_rate, np.full(len(y_test), prediction)
