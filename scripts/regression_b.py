@@ -93,7 +93,8 @@ for i, (outer_train_index, validation_index) in enumerate(outer_selector.split(X
     # Find ideal lambda and hidden units
     best_lambda = lambda_list[np.argmin(E_gen_lin)]
     best_hidden_units = hidden_units_list[np.argmin(E_gen_ann)]
-
+    
+    # copy from classification increase_confusion...
     # Train new models with the best lambda and hidden units on X_outer_train
     # Compute E_test for table on X_validation
     # compute error for baseline model (e.g. age = avg(age)) and print/save one row of table
