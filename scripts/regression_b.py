@@ -25,7 +25,7 @@ X *= 1 / X_scale
 y_offset = y.mean()
 y = y - y_offset
 
-K_1 = K_2 = 2  # when everything works, set to 10
+K_1 = K_2 = 2  # TODO: when everything works, set to 10
 
 
 lambda_list = np.logspace(start=-5, stop=5, num=5)  # TODO: first try to find suitable ranges
