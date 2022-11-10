@@ -5,6 +5,7 @@ import torch
 from baseline_regression import train_baseline_regressor
 from linear_regression import train_linear_regressor, train_linear_regressor_ensemble
 from ann_regression import train_ann_regressor, train_ann_regressor_ensemble
+import pickle
 
 regression_target = 'age'
 
@@ -25,15 +26,12 @@ X *= 1 / X_scale
 y_offset = y.mean()
 y = y - y_offset
 
-K_1 = K_2 = 2  # TODO: when everything works, set to 10
+K_1 = 10
+K_2 = 10
 
-# TODO: try to find suitable ranges,
-#  first run with small K_1, K_2 and find start/stop so that you can see error go down and back up
-#  once you found optimal lambda run with smaller range centred around optimal lambda
-lambda_list = np.logspace(start=-5, stop=5, num=11)
-# TODO: try to find suitable ranges,
-#  same as for lambda list( but this must always include k=1)
-hidden_units_list = np.array(1, 2, 3, 5, 10, 15, 40)
+
+lambda_list = np.logspace(start=1, stop=3, num=11)
+hidden_units_list = np.array((1, 2, 4, 6, 8, 10, 12, 15))
 
 
 outer_fold_errors = {'lin': np.ndarray((K_1, len(lambda_list))),
@@ -46,9 +44,15 @@ test_miss_rates = {key: np.ndarray((K_1,)) for key in ('base', 'lin', 'ann')}
 
 predictions = {key: [] for key in ('true', 'base', 'lin', 'ann')}
 
+use_folds = range(0, 4)
+# use_folds = range(4, 7)
+# use_folds = range(7, 10)
 
 outer_selector = KFold(K_1)
 for i, (outer_train_index, validation_index) in enumerate(outer_selector.split(X)):
+    if i not in use_folds:
+        continue
+
     X_outer_train, y_outer_train = X[outer_train_index, :], y[outer_train_index]
     X_validation, y_validation = X[validation_index, :], y[validation_index]
 
@@ -119,6 +123,7 @@ for i, (outer_train_index, validation_index) in enumerate(outer_selector.split(X
     test_miss_rates['lin'][i] = lin_miss_rate
     test_miss_rates['ann'][i] = ann_miss_rate
 
+    predictions['true'].append(y_validation)
     predictions['base'].append(base_predictions)
     predictions['lin'].append(lin_predictions)
     predictions['ann'].append(ann_predictions)
@@ -126,8 +131,20 @@ for i, (outer_train_index, validation_index) in enumerate(outer_selector.split(X
     print(f'{i}:', end='\t')
     print(f'{base_miss_rate}', end='\t')
     print(f'{best_lambda:.2f}: {lin_miss_rate:.2f}', end='\t')
-    print(f'{best_hidden_unit:.2f}: {ann_miss_rate:.2f}')
+    print(f'{best_hidden_unit:.2f}: {ann_miss_rate:.2f}', end='')
+    print()
 
+
+with open('send_me_this_file.pickle', 'wb') as file:
+    pickle.dump({'outer_fold_errors': outer_fold_errors,
+                 'best_lambdas': best_lambdas,
+                 'best_hid_units': best_hid_units,
+                 'test_miss_rates': test_miss_rates,
+                 'predictions': predictions,
+                 'lin_inner_fold_errors': lin_inner_fold_errors,
+                 'inner_fold_coefficients': inner_fold_coefficients,
+                 'ann_inner_fold_errors': ann_inner_fold_errors,
+                 'used_folds': use_folds}, file)
 
 # TODO: print results
 # table for report
@@ -137,14 +154,56 @@ for i in range(K_1):
           f'{best_lambdas[i]:.4f}',
           f'{test_miss_rates["lin"][i]:.1f}',
           int(best_hid_units[i]),
-          f'{test_miss_rates["knn"][i]:.1f}',
+          f'{test_miss_rates["ann"][i]:.1f}',
           f'{test_miss_rates["base"][i]:.1f}', sep='\t')
 
 # TODO: create plots
+# plt.figure()
+#
+# for i in range(K_1):
+#     plt.plot(lambda_list, outer_fold_errors['lin'][i])
+#
+# plt.xscale('log')
+# plt.xlabel('$\\lambda$')
+# plt.ylabel('Error')
+#
+# plt.title('Test model error for different folds.')
+#
+# plt.savefig('RegressionError_vs_lambda.png')
+# plt.show()
+
+# plt.figure()
+#
+# leg_idx = [5,  8, 10, 13, 17, 19, 34, 37]
+# handles = [plt.plot(lambda_list, coefficients[:, i])[0] for i in range(M)]
+#
+# used = [handles[i] for i in leg_idx]
+# names = ['From US',
+#          'Work-class: Private',
+#          'Work-class: Self emp. not inc.',
+#          'Marital status: Divorced',
+#          'Marital status: Never married',
+#          'Marital status: Widowed',
+#          'Relationship: Married',
+#          'Relationship: Own child']
+# plt.legend(used, names)
+#
+# plt.xscale('log')
+#
+# plt.xlabel('$\\lambda$')
+# plt.ylabel('$w_i$')
+#
+# plt.title('Parameter weights')
+#
+# plt.savefig('RegressionWeight_vs_lambda.png')
+# plt.show()
 
 
 for model in predictions:
-    predictions[model] = np.concatenate(predictions[model])
+    try:
+        predictions[model] = np.concatenate(predictions[model])
+    except RuntimeError:
+        predictions[model] = np.reshape(np.concatenate([p.detach().numpy() for p in predictions[model]]), (-1))
 
 # TODO: compute statics (e.g. ex7_2_1.py for pairs (baseline, linear), (baseline, ANN), (linear, ANN))
 #  p-value, CI
