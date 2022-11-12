@@ -5,7 +5,8 @@ import torch
 from baseline_regression import train_baseline_regressor
 from linear_regression import train_linear_regressor, train_linear_regressor_ensemble
 from ann_regression import train_ann_regressor, train_ann_regressor_ensemble
-import pickle
+import scipy.stats as st
+
 
 regression_target = 'age'
 
@@ -44,7 +45,7 @@ test_miss_rates = {key: np.ndarray((K_1,)) for key in ('base', 'lin', 'ann')}
 
 predictions = {key: [] for key in ('true', 'base', 'lin', 'ann')}
 
-use_folds = range(0, 4)
+use_folds = range(4, 4)
 # use_folds = range(4, 7)
 # use_folds = range(7, 10)
 
@@ -80,7 +81,6 @@ for i, (outer_train_index, validation_index) in enumerate(outer_selector.split(X
         X_test = torch.Tensor(X_outer_train[test_index, :])
         y_test = torch.Tensor(np.reshape(y_outer_train[test_index], (-1, 1)))
 
-        # TODO: increase n_replicates & max_iter when everything works
         errors = train_ann_regressor_ensemble(X_train,
                                               y_train,
                                               X_test,
@@ -135,18 +135,19 @@ for i, (outer_train_index, validation_index) in enumerate(outer_selector.split(X
     print()
 
 
-with open('send_me_this_file.pickle', 'wb') as file:
-    pickle.dump({'outer_fold_errors': outer_fold_errors,
-                 'best_lambdas': best_lambdas,
-                 'best_hid_units': best_hid_units,
-                 'test_miss_rates': test_miss_rates,
-                 'predictions': predictions,
-                 'lin_inner_fold_errors': lin_inner_fold_errors,
-                 'inner_fold_coefficients': inner_fold_coefficients,
-                 'ann_inner_fold_errors': ann_inner_fold_errors,
-                 'used_folds': use_folds}, file)
+# with open(f'fold_{use_folds[0]}-{use_folds[-1]}.pickle', 'wb') as file:
+#     import pickle
+#     pickle.dump({'outer_fold_errors': outer_fold_errors,
+#                  'best_lambdas': best_lambdas,
+#                  'best_hid_units': best_hid_units,
+#                  'test_miss_rates': test_miss_rates,
+#                  'predictions': predictions,
+#                  'lin_inner_fold_errors': lin_inner_fold_errors,
+#                  'inner_fold_coefficients': inner_fold_coefficients,
+#                  'ann_inner_fold_errors': ann_inner_fold_errors,
+#                  'used_folds': use_folds}, file)
 
-# TODO: print results
+
 # table for report
 print('Fold\t', 'lambda', 'Error', 'units', 'Error', 'Error', sep='\t')
 for i in range(K_1):
@@ -154,10 +155,23 @@ for i in range(K_1):
           f'{best_lambdas[i]:.4f}',
           f'{test_miss_rates["lin"][i]:.1f}',
           int(best_hid_units[i]),
-          f'{test_miss_rates["ann"][i]:.1f}',
+          f'\t{test_miss_rates["ann"][i]:.1f}',
           f'{test_miss_rates["base"][i]:.1f}', sep='\t')
 
-# TODO: create plots
+# Table:      Lin. model      ANN model    baseline
+# Fold		lambda	Error	units	Error	Error
+# 0			63.0957	106.8	8	    101.0	170.7
+# 1			63.0957	108.9	6	    101.9	172.2
+# 2			39.8107	110.4	12	    100.8	174.7
+# 3			63.0957	107.8	6	    102.5	176.6
+# 4			63.0957	105.5	6	    101.3	177.4
+# 5			63.0957	101.1	8	    93.8	167.9
+# 6			63.0957	101.4	10	    93.3	168.7
+# 7			39.8107	105.3	6	    97.6	176.7
+# 8			63.0957	109.8	10	    100.8	182.1
+# 9			63.0957	109.9	10	    100.9	180.3
+
+
 # plt.figure()
 #
 # for i in range(K_1):
@@ -197,6 +211,70 @@ for i in range(K_1):
 #
 # plt.savefig('RegressionWeight_vs_lambda.png')
 # plt.show()
+#
+# plt.figure()
+#
+# plt.plot(lambda_list[:-2], np.mean(outer_fold_errors['lin'][:, :-2], axis=0))
+#
+# plt.xscale('log')
+# plt.xlabel('$\\lambda$')
+# plt.ylabel('Error')
+#
+# plt.title('Mean model error from all folds.')
+#
+# plt.savefig('Regression_B_MeanError_vs_lambda_close.png')
+# plt.show()
+#
+# plt.figure()
+#
+# for row in range(K_1):
+#     plt.plot(lambda_list, outer_fold_errors['lin'][row])
+#
+# plt.xscale('log')
+# plt.xlabel('$\\lambda$')
+# plt.ylabel('Error')
+#
+# plt.title('Model error for different folds.')
+#
+# plt.savefig('Regression_B_Error_vs_lambda.png')
+# plt.show()
+#
+# plt.figure()
+#
+# plt.plot(hidden_units_list, np.mean(outer_fold_errors['ann'], axis=0))
+#
+# plt.xlabel('no. hidden nodes')
+# plt.ylabel('Error')
+#
+# plt.title('Mean model error from all folds.')
+#
+# plt.savefig('Regression_B_MeanError_vs_units.png')
+# plt.show()
+#
+# plt.figure()
+#
+# plt.plot(hidden_units_list[1:], np.mean(outer_fold_errors['ann'], axis=0)[1:])
+#
+# plt.xlabel('no. hidden nodes')
+# plt.ylabel('Error')
+#
+# plt.title('Mean model error from all folds.')
+#
+# plt.savefig('Regression_B_MeanError_vs_units_close.png')
+# plt.show()
+#
+# plt.figure()
+#
+# for row in range(K_1):
+#     plt.plot(hidden_units_list, outer_fold_errors['ann'][row])
+#
+# plt.xlabel('no. hidden nodes')
+# plt.ylabel('Error')
+#
+# plt.title('Model error for different folds.')
+#
+# plt.savefig('Regression_B_Error_vs_units.png')
+# plt.show()
 
 
 for model in predictions:
@@ -205,6 +283,53 @@ for model in predictions:
     except RuntimeError:
         predictions[model] = np.reshape(np.concatenate([p.detach().numpy() for p in predictions[model]]), (-1))
 
-# TODO: compute statics (e.g. ex7_2_1.py for pairs (baseline, linear), (baseline, ANN), (linear, ANN))
-#  p-value, CI
-#  use predictions variable
+
+z = {key: np.power(predictions[key] - predictions['true'], 2) for key in ['base',
+                                                                          'lin',
+                                                                          'ann']}
+
+alpha = 0.05
+CI = {key: st.t.interval(1-alpha,
+                         df=z[key].size-1,
+                         loc=z[key].mean(),
+                         scale=st.sem(z[key])) for key in ['base', 'lin', 'ann']}
+
+for key, value in CI.items():
+    print(f'{key} {100*(1-alpha)}% CI: {value}')
+
+
+# Compute confidence interval of z = zA-zB and p-value of Null hypothesis
+pairs = (('base', 'lin'),
+         ('base', 'ann'),
+         ('lin', 'ann'))
+for pair in pairs:
+    a, b = pair
+    print(f'{a} vs {b} model:')
+    z_diff = z[a] - z[b]
+    CI_diff = st.t.interval(1-alpha,
+                            z_diff.size - 1,
+                            loc=z_diff.mean(),
+                            scale=st.sem(z_diff))
+    print(CI_diff)
+
+    p = 2*st.t.cdf(-np.abs(z_diff.mean())/st.sem(z_diff), df=z_diff.size - 1)  # p-value
+
+    print(f'p-value: {p}')
+    print()
+
+
+# base 95.0% CI: (172.525549490786, 176.91686242143064)
+# lin 95.0% CI: (104.99894526646253, 108.42168886572148)
+# ann 95.0% CI: (97.71902755497766, 101.06157765021783)
+#
+# base vs lin model:
+# (66.3455143159158, 69.6762634641168)
+# p-value: 0.0
+#
+# base vs ann model:
+# (73.45962770604766, 77.20217900097356)
+# p-value: 0.0
+#
+# lin vs ann model:
+# (6.635770071446844, 8.004258855541762)
+# p-value: 3.742286113231391e-97

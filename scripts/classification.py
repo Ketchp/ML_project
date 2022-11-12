@@ -213,3 +213,5 @@ mcnemar(predictions['true'],
 # with open('file_name.pickle', 'wb') as file:
 #     import pickle
 #     pickle.dump({'Anything you want': "Nothing"}, file)
+
+# all results and tables in classification_results.txt
