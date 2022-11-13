@@ -32,7 +32,7 @@ selector = KFold(K)
 # lambda_list = np.logspace(start=1, stop=8, num=20)
 
 # Precise tight scan
-lambda_list = np.logspace(start=0, stop=4, num=50)
+lambda_list = np.logspace(start=1, stop=4, num=31)
 
 lin_reg_err = np.ndarray((K, len(lambda_list)))
 coefficients = np.ndarray((K, len(lambda_list), M))

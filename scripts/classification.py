@@ -19,7 +19,7 @@ K_1 = 10
 K_2 = 10  # when everything works 10
 
 
-lambda_list = np.logspace(start=-2, stop=1, num=11)
+lambda_list = np.logspace(start=-3, stop=1, num=31)
 neighbors_list = np.array((1, 5, 10, 16, 19, 22, 25, 28, 31, 34, 38, 42, 50, 100))
 
 
@@ -115,10 +115,12 @@ for i, (outer_train_index, validation_index) in enumerate(outer_selector.split(X
     predictions['lin'].append(lin_predictions)
     predictions['knn'].append(knn_predictions)
 
-    print(f'{i}:', end='\t')
-    print(f'{base_miss_rate:.2f}', end='\t')
-    print(f'{best_lambda:.2f}: {lin_miss_rate:.2f}', end='\t')
-    print(f'{best_k_neigh:.2f}: {knn_miss_rate:.2f}')
+    print(i, '\t',
+          f'{best_lambdas[i]:.3f}',
+          f'{test_miss_rates["lin"][i]:.4f}',
+          int(best_k_neighbors[i]),
+          f'{test_miss_rates["knn"][i]:.4f}',
+          f'{test_miss_rates["base"][i]:.4f}', sep='\t')
 
 
 # plt.figure()
@@ -183,11 +185,11 @@ plt.show()
 print('Fold\t', 'lambda', 'Error', 'K', 'Error', 'Error', sep='\t')
 for i in range(K_1):
     print(i, '\t',
-          f'{best_lambdas[i]:.2f}',
-          f'{test_miss_rates["lin"][i]:.2f}',
+          f'{best_lambdas[i]:.3f}',
+          f'{test_miss_rates["lin"][i]:.4f}',
           int(best_k_neighbors[i]),
-          f'{test_miss_rates["knn"][i]:.2f}',
-          f'{test_miss_rates["base"][i]:.2f}', sep='\t')
+          f'{test_miss_rates["knn"][i]:.4f}',
+          f'{test_miss_rates["base"][i]:.4f}', sep='\t')
 
 # Statistics evaluation
 for model in predictions:
